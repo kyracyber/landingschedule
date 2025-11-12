@@ -3,22 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Book a Cybersecurity Consultation | VerSprite</title>
-  <meta name="description" content="Instantly book a cybersecurity consultation with a VerSprite sales specialist. Choose your industry to reveal a tailored Calendly schedule." />
-  <link rel="canonical" href="https://kcybervs.github.io/VerSpriteScheduling/" />
-  <meta name="robots" content="index,follow" />
-  <meta name="theme-color" content="#000000" />
-  <meta property="og:title" content="Book a Cybersecurity Consultation | VerSprite" />
-  <meta property="og:description" content="Select your industry and schedule time with VerSprite cybersecurity specialists." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://kcybervs.github.io/VerSpriteScheduling/" />
-  <meta property="og:site_name" content="VerSprite Scheduling" />
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Book a Cybersecurity Consultation | VerSprite" />
-  <meta name="twitter:description" content="Select your industry and instantly book time with VerSprite cybersecurity specialists." />
-  <meta name="color-scheme" content="dark" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23000'/%3E%3Cpath d='M14 44L30 12l4 8 16-8-16 32-4-8-16 8z' fill='%23ED1C24'/%3E%3C/svg%3E" />
-  <link rel="preload" as="image" href="./Lucid_Origin_a_futuristic_cyberpunk_cityscape_at_night_with_vi_0.jpg" />
+  <title>Book a Meeting | VerSprite</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,23 +12,7 @@
 
   <!-- Calendly -->
   <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
-  <!-- Note: Avoid crossorigin/preload to prevent CORS errors -->
   <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
-  <link rel="dns-prefetch" href="https://assets.calendly.com" />
-  <link rel="preconnect" href="https://assets.calendly.com" crossorigin />
-  <link rel="preconnect" href="https://calendly.com" crossorigin />
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "VerSprite",
-    "url": "https://kcybervs.github.io/VerSpriteScheduling/",
-    "logo": "https://kcybervs.github.io/VerSpriteScheduling/favicon.svg",
-    "sameAs": ["https://versprite.com"],
-    "description": "Cybersecurity consulting and services from VerSprite. Instantly book a meeting with a specialist." 
-  }
-  </script>
 
   <style>
     :root{
@@ -79,25 +48,13 @@
     footer{border-top:1px solid rgba(0,255,255,.2);color:#9aa1af;text-align:center;padding:2rem 1rem;background:rgba(0,0,0,.75)}
     footer a{color:var(--vs-cyan);text-decoration:none}
     footer a:hover{color:var(--vs-red)}
-    .skip-link{position:absolute;top:-40px;left:0;background:#000;color:#fff;padding:.5rem 1rem;z-index:100;transition:top .2s;}
-    .skip-link:focus{top:0}
-    .loading{animation:pulse 1.2s infinite;color:var(--m);text-align:center;padding:1.25rem;font-size:.95rem}
-    @keyframes pulse{0%{opacity:.45}50%{opacity:1}100%{opacity:.45}}
-    /* Calendly hardening: force dark backgrounds and smooth reveal */
-  .calendly-inline-widget{background:#0b0c10!important;position:relative;overflow:hidden;border-radius:12px}
-  .calendly-inline-widget iframe{display:block;background:#0b0c10!important;opacity:0;transition:opacity .25s ease;border:0}
-  .widget-overlay{position:absolute;inset:0;background:#0b0c10;display:grid;place-items:center;z-index:999;opacity:1;transition:opacity .3s ease}
-  .widget-overlay .msg{color:#9CA3AF;animation:pulse 1.2s infinite}
-  /* Permanent edge mask to hide any inner white gutters from iframe default margins */
-  .edge-mask{position:absolute;inset:0;pointer-events:none;border:14px solid #0b0c10;border-radius:12px;box-sizing:border-box;z-index:6}
   </style>
 </head>
 <body>
-  <a href="#book" class="skip-link">Skip to booking form</a>
   <header class="hero" id="top">
     <div class="wrap" style="padding:4rem 1rem">
-  <h1>Contact Us</h1>
-  <p>Choose your industry and instantly connect with the right VerSprite sales specialist calendar</p>
+      <h1>Contact Us/h1>
+      <p>Choose your industry and instantly connect with the right VerSprite sales specialist calendar</p>
       <a class="cta" href="#book" aria-label="Skip to booking form and calendar">Get Started</a>
     </div>
   </header>
@@ -121,8 +78,7 @@
   </footer>
 
   <script>
-  // Mapping of industry to salesperson (single source of truth)
-  const industryToSalesperson = {
+    var industryToSalesperson = {
       "Education": "Haylie Leitzsey",
       "Energy & Utilities": "Haylie Leitzsey",
       "Information Technology & Software": "Haylie Leitzsey",
@@ -147,83 +103,32 @@
       "Transportation & Logistics": "Sarah Kernan"
     };
 
-  const salespersonCalendly = {
+    var salespersonCalendly = {
       "Haylie Leitzsey": "https://calendly.com/haylieleitzsey/versprite-chat",
       "Sarah Kernan": "https://calendly.com/sarah-versprite/30min"
     };
 
-  // Optional overrides if a specific industry needs a distinct Calendly URL
-  const industryCalendlyOverrides = {};
+    var industryCalendlyOverrides = {};
 
-  // Removed cross-origin prefetch of Calendly pages to avoid CORS console errors.
+    var sel = document.getElementById('industry');
+    Object.keys(industryToSalesperson).forEach(function(ind){
+      var opt = document.createElement('option');
+      opt.value = ind; opt.textContent = ind; sel.appendChild(opt);
+    });
 
-  const sel = document.getElementById('industry');
-    Object.keys(industryToSalesperson)
-      .slice()
-      .sort(function(a,b){return a.localeCompare(b, undefined, {sensitivity:'base'});})
-      .forEach(function(ind){
-        const opt = document.createElement('option');
-        opt.value = ind; opt.textContent = ind; sel.appendChild(opt);
-      });
+    var calWrap = document.getElementById('calendly');
 
-  const calWrap = document.getElementById('calendly');
-  // Live region to announce loading/status changes for screen readers
-  const statusRegion = document.createElement('div');
-  statusRegion.className = 'visually-hidden';
-  statusRegion.setAttribute('aria-live','polite');
-  calWrap.appendChild(statusRegion);
-
-  // Global timer to wait for Calendly script readiness
-  let calendlyInitInterval = null;
-  let calendlyReady = false;
-  const pendingCalendly = [];
-  function calendlyLog(msg){
-    try { (window.__calendlyLoadLog = window.__calendlyLoadLog || []).push(Date.now()+': '+msg); } catch(_) {}
-  }
-
-  function getCalendlyUrlForIndustry(industry){
+    function getCalendlyUrlForIndustry(industry){
       if (!industry) return null;
       if (industryCalendlyOverrides[industry]) return industryCalendlyOverrides[industry];
       var sp = industryToSalesperson[industry];
       return salespersonCalendly[sp] || null;
     }
 
-  function ensureCalendlyScript(){
-    // Assume script tag present via static HTML; avoid dynamic reinjection which can cause CORS warnings
-    if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
-      calendlyReady = true;
-    } else {
-      // Poll lightly until ready; stop after 10s
-      let waitAttempts = 0;
-      const waitTimer = setInterval(function(){
-        waitAttempts++;
-        if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
-          calendlyLog('Calendly ready after '+waitAttempts+' attempts');
-          calendlyReady = true;
-          clearInterval(waitTimer);
-          while(pendingCalendly.length){
-            try { pendingCalendly.shift()(); } catch(e){ calendlyLog('Pending render error: '+e.message); }
-          }
-        } else if(waitAttempts > 50){
-          calendlyLog('Calendly script not ready after polling');
-          clearInterval(waitTimer);
-        }
-      }, 200);
-    }
-  }
-
-  function renderCalendly(url){
-      // Clear previous (except statusRegion) and show loading state
-      ensureCalendlyScript();
-    if (calendlyInitInterval) { clearInterval(calendlyInitInterval); calendlyInitInterval = null; }
-      calWrap.querySelectorAll(':scope > :not(.visually-hidden)').forEach(function(n){n.remove();});
-      statusRegion.textContent = '';
+    function renderCalendly(url){
+      calWrap.innerHTML = '';
       if(!url){
-        const p = document.createElement('p');
-        p.className = 'muted';
-        p.textContent = 'No link configured yet for this selection.';
-        calWrap.appendChild(p);
-        statusRegion.textContent = 'No calendar available for this selection.';
+        calWrap.innerHTML = '<p class="muted">No link configured yet for this selection.</p>';
         return;
       }
 
@@ -237,116 +142,44 @@
         url = u.origin + u.pathname + '?' + p.toString();
       } catch(e) {}
 
-      const loading = document.createElement('div');
-      loading.className = 'loading';
-      loading.textContent = 'Loading calendar…';
-      calWrap.appendChild(loading);
-      statusRegion.textContent = 'Loading calendar.';
-      const div = document.createElement('div');
+      var div = document.createElement('div');
       div.className = 'calendly-inline-widget';
       div.setAttribute('data-url', url);
       div.style.minWidth = '320px';
       div.style.height = (window.innerHeight > 820 ? '720px' : '620px');
-      div.style.background = '#0b0c10';
-  // Permanent edge mask to hide any inner white gutters
-  const edgeMask = document.createElement('div');
-  edgeMask.className = 'edge-mask';
+      calWrap.appendChild(div);
 
-  // Overlay to mask any white flash until iframe paints
-      const overlay = document.createElement('div');
-      overlay.className = 'widget-overlay';
-      const overlayMsg = document.createElement('div');
-      overlayMsg.className = 'msg';
-      overlayMsg.textContent = 'Preparing calendar…';
-      overlay.appendChild(overlayMsg);
-  // Prepare widget with mask and overlay BEFORE inserting into DOM to avoid any gap
-  div.appendChild(edgeMask);
-  div.appendChild(overlay);
-  // Replace loading with widget (overlay is already inside)
-  calWrap.replaceChild(div, loading);
-      // Initialize Calendly when script is ready, with smooth reveal
-      const setupAndInit = function(){
-        // Observe iframe insertion and fade in on load
-        const reveal = function(iframe){
-          try {
-            // Best-effort: grant permissions that Calendly might request in its iframe
-            try {
-              iframe.setAttribute('allow', 'payment *; clipboard-read *; clipboard-write *; autoplay *');
-              iframe.setAttribute('allowpaymentrequest', 'true');
-            } catch(_e) {}
-            iframe.style.opacity = '0';
-            iframe.addEventListener('load', function(){
-              // Crossfade: show iframe while fading overlay out
-              iframe.style.opacity = '1';
-              if(overlay){ overlay.style.opacity = '0'; }
-              setTimeout(function(){ if(overlay && overlay.parentNode){ overlay.remove(); } }, 320);
-              statusRegion.textContent='Calendar loaded.';
-            }, { once:true });
-          } catch(_) {
-            if(overlay && overlay.parentNode){ overlay.remove(); }
-          }
-        };
-        const obs = new MutationObserver(function(muts){
-          for(const m of muts){
-            for(const n of m.addedNodes){
-              if(n.tagName === 'IFRAME'){
-                reveal(n);
-                obs.disconnect();
-                return;
-              }
-            }
-          }
-        });
-        obs.observe(div, { childList:true, subtree:true });
-        try { window.Calendly.initInlineWidget({ url: url, parentElement: div }); } catch(e) { statusRegion.textContent = 'Failed to load calendar.'; }
-      };
-
-      if(calendlyReady && window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
-        calendlyLog('Calendly ready; init widget');
-        setupAndInit();
-      } else {
-        calendlyLog('Calendly pending; queue init');
-        statusRegion.textContent = 'Preparing calendar…';
-        pendingCalendly.push(setupAndInit);
-        // Failsafe timeout (12s)
-        setTimeout(function(){
-          if(!calendlyReady){
-            calendlyLog('Calendly timeout');
-            if(overlay && overlay.parentNode){ overlay.remove(); }
-            statusRegion.textContent = 'Calendar temporarily unavailable. Try again later.';
-          }
-        }, 12000);
+      if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
+        try { window.Calendly.initInlineWidget({ url: url, parentElement: div }); }catch(e){}
       }
-
-  // Safety: drop overlay after 12s even without load event
-  setTimeout(function(){ if(overlay && overlay.parentNode){ overlay.style.opacity='0'; setTimeout(function(){ if(overlay && overlay.parentNode){ overlay.remove(); } }, 320); } }, 12000);
-
-      // Secondary fallback removed per request: no direct-link buttons
     }
 
     sel.addEventListener('change', function(e){
-      const chosen = e.target.value;
+      var chosen = e.target.value;
       if (!industryToSalesperson.hasOwnProperty(chosen)) {
         calWrap.innerHTML = '<p class="muted">Unknown industry selected.</p>';
-        statusRegion.textContent = 'Unknown industry selected.';
         return;
       }
       renderCalendly(getCalendlyUrlForIndustry(chosen));
     });
 
-    const params = new URLSearchParams(location.search);
-    const preRaw = params.get('industry') || '';
-    const pre = preRaw.toLowerCase();
-    const keys = Object.keys(industryToSalesperson);
-    let match = null;
-    for (let i=0;i<keys.length;i++){
+    var params = new URLSearchParams(location.search);
+    var preRaw = params.get('industry') || '';
+    var pre = preRaw.toLowerCase();
+    var keys = Object.keys(industryToSalesperson);
+    var match = null;
+    for (var i=0;i<keys.length;i++){
       if (keys[i].toLowerCase() === pre){ match = keys[i]; break; }
     }
     if (match){ sel.value = match; renderCalendly(getCalendlyUrlForIndustry(match)); }
 
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Note: Avoid calling Calendly.initInlineWidgets globally to prevent double-rendering.
+    window.addEventListener('load', function(){
+      if (window.Calendly && document.querySelector('.calendly-inline-widget')) {
+        try { window.Calendly.initInlineWidgets && window.Calendly.initInlineWidgets(); } catch(e){}
+      }
+    });
   </script>
 </body>
 </html>
