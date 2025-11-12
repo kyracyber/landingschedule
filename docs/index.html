@@ -58,6 +58,8 @@
     .skip-link:focus{top:0}
     .loading{animation:pulse 1.2s infinite;color:var(--m);text-align:center;padding:1.25rem;font-size:.95rem}
     @keyframes pulse{0%{opacity:.45}50%{opacity:1}100%{opacity:.45}}
+    /* Mask any white flash from Calendly iframe while it initializes */
+    .widget-overlay{position:absolute;inset:0;background:#000;pointer-events:none;opacity:1;transition:opacity .25s ease}
   </style>
 </head>
 <body>
@@ -189,11 +191,42 @@
       div.style.minWidth = '320px';
       div.style.height = (window.innerHeight > 820 ? '720px' : '620px');
   // Ensure container behind iframe matches page bg while loading/if params fail
-  div.style.backgroundColor = getComputedStyle(document.body).backgroundColor || '#000';
+  var siteBgCss = getComputedStyle(document.body).backgroundColor || '#000';
+  div.style.backgroundColor = siteBgCss;
+  div.style.position = 'relative';
+  // Add an overlay to hide any white flash until iframe fully loads
+  const overlay = document.createElement('div');
+  overlay.className = 'widget-overlay';
+  overlay.style.backgroundColor = siteBgCss;
+  div.appendChild(overlay);
       // Replace loading with widget
       calWrap.replaceChild(div, loading);
       if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
-        try { window.Calendly.initInlineWidget({ url: url, parentElement: div }); statusRegion.textContent='Calendar loaded.'; }catch(e){ statusRegion.textContent='Failed to load calendar.'; }
+        try {
+          window.Calendly.initInlineWidget({ url: url, parentElement: div });
+          // After Calendly injects its iframe, wait for load then fade overlay
+          var obs; var faded = false;
+          function hideOverlay(){
+            if (faded) return; faded = true;
+            overlay.style.opacity = '0';
+            setTimeout(function(){ if (overlay.parentNode) overlay.parentNode.removeChild(overlay); }, 300);
+          }
+          function wireIframe(){
+            var ifr = div.querySelector('iframe');
+            if (ifr){
+              try { ifr.style.backgroundColor = siteBgCss; } catch(e) {}
+              ifr.addEventListener('load', hideOverlay, { once:true, capture:true });
+              // Fallback in case load doesn't fire
+              setTimeout(hideOverlay, 2500);
+              if (obs) obs.disconnect();
+            }
+          }
+          obs = new MutationObserver(wireIframe);
+          obs.observe(div, { childList:true, subtree:true });
+          // Also try shortly after init
+          setTimeout(wireIframe, 150);
+          statusRegion.textContent='Calendar loaded.';
+        }catch(e){ statusRegion.textContent='Failed to load calendar.'; }
       } else {
         // Fallback: show link directly if script not ready
         const link = document.createElement('a');
