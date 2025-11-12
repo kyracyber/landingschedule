@@ -50,7 +50,10 @@
     footer a:hover{color:var(--vs-red)}
     /* Make Calendly smaller and centered */
     #calendly{padding:0}
-    #calendly .calendly-inline-widget{width:100%;max-width:820px;margin:0 auto;border-radius:12px;overflow:hidden}
+  #calendly .calendly-inline-widget{width:100%;max-width:820px;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:inset 0 0 24px rgba(0,0,0,.8);background:#0b0c10;height:clamp(480px,68vh,560px)}
+  @media (min-width:1280px){#calendly .calendly-inline-widget{max-width:760px}}
+  @media (min-width:1600px){#calendly .calendly-inline-widget{max-width:720px}}
+  body{min-height:100dvh}
   </style>
 </head>
 <body>
@@ -148,9 +151,8 @@
       var div = document.createElement('div');
       div.className = 'calendly-inline-widget';
       div.setAttribute('data-url', url);
-      div.style.minWidth = '320px';
-  // Smaller, responsive height
-  div.style.height = (window.innerHeight > 820 ? '560px' : '520px');
+    div.style.minWidth = '320px';
+    // Height now controlled via CSS clamp; JS height assignment removed.
       calWrap.appendChild(div);
 
       if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
