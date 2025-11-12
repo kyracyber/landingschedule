@@ -48,6 +48,29 @@
     footer{border-top:1px solid rgba(0,255,255,.2);color:#9aa1af;text-align:center;padding:2rem 1rem;background:rgba(0,0,0,.75)}
     footer a{color:var(--vs-cyan);text-decoration:none}
     footer a:hover{color:var(--vs-red)}
+
+    /* Responsive adjustments */
+    .calendly-inline-widget{width:100% !important;}
+
+    @media (max-width: 900px) {
+      .wrap{padding:2rem .75rem}
+      .hero{min-height:45vh}
+      .hero h1{font-size:clamp(1.6rem,6vw,3rem)}
+      .card{padding:1rem;border-radius:12px}
+      .panel{min-height:360px}
+      .cta{padding:.65rem 1rem}
+    }
+
+    @media (max-width:480px) {
+      .wrap{padding:1.25rem .75rem}
+      .hero{min-height:40vh}
+      .hero::before{background-position:50% 10%}
+      .hero h1{font-size:clamp(1.4rem,7vw,2.4rem)}
+      .panel{min-height:420px}
+      .cta{padding:.6rem .9rem}
+      /* make the inline widget take a sensible mobile height */
+      .calendly-inline-widget{height:560px !important}
+    }
   </style>
 </head>
 <body>
