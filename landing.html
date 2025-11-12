@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Book a Meeting | VerSprite</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Calendly -->
+  <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
+  <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+
+  <style>
+    :root{
+      --vs-cyan:#00FFFF;
+      --vs-red:#ED1C24;
+      --ink:#0B0C10;
+      --panel:#111827;
+      --panel-2:#0F172A;
+      --text:#E5E7EB;
+      --m:#9CA3AF;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans";color:var(--text);background:#000;overflow-x:hidden}
+    .visually-hidden{position:absolute!important;clip:rect(1px,1px,1px,1px);padding:0;border:0;height:1px;width:1px;overflow:hidden}
+
+    /* HERO */
+    .hero{position:relative;min-height:56vh;display:grid;place-items:center;text-align:center;overflow:hidden;background:radial-gradient(1200px 600px at 50% -10%,rgba(0,255,255,.15),transparent),linear-gradient(180deg,rgba(0,0,0,.3),rgba(0,0,0,.9))}
+    .hero::before{content:"";position:absolute;inset:0;background:url('./Lucid_Origin_a_futuristic_cyberpunk_cityscape_at_night_with_vi_0.jpg') center/cover no-repeat;opacity:.35;filter:saturate(120%) contrast(110%)}
+    .hero h1{position:relative;font-weight:800;font-size:clamp(2rem,5vw,4rem);letter-spacing:-.02em;text-shadow:0 0 14px rgba(0,255,255,.7)}
+    .hero p{position:relative;max-width:780px;margin:1rem auto 2rem;color:var(--m)}
+    .cta{position:relative;display:inline-block;padding:.85rem 1.2rem;border-radius:12px;font-weight:700;color:#fff;background:var(--vs-red);box-shadow:0 0 16px rgba(237,28,36,.6);text-decoration:none}
+    .cta:hover{background:#ff004d;box-shadow:0 0 24px rgba(255,0,77,.8)}
+
+    .wrap{max-width:1080px;margin:0 auto;padding:3rem 1rem}
+    .card{background:rgba(17,24,39,.85);border:1px solid rgba(0,255,255,.35);border-radius:18px;padding:1.5rem;box-shadow:0 0 28px rgba(0,255,255,.25);backdrop-filter: blur(6px)}
+    .card h2{margin:0 0 1rem;font-weight:800;text-align:center;color:var(--vs-cyan);text-shadow:0 0 12px rgba(0,255,255,.7)}
+    .select{width:100%;background:var(--panel-2);color:var(--text);border:1px solid rgba(0,255,255,.35);border-radius:12px;padding:.8rem;outline:none}
+    .select:focus{box-shadow:0 0 0 3px rgba(237,28,36,.35)}
+    .panel{background:rgba(15,23,42,.9);border:1px solid rgba(0,255,255,.3);border-radius:12px;padding:1rem;min-height:260px}
+    .muted{color:var(--m);text-align:center}
+
+    footer{border-top:1px solid rgba(0,255,255,.2);color:#9aa1af;text-align:center;padding:2rem 1rem;background:rgba(0,0,0,.75)}
+    footer a{color:var(--vs-cyan);text-decoration:none}
+    footer a:hover{color:var(--vs-red)}
+  </style>
+</head>
+<body>
+  <header class="hero" id="top">
+    <div class="wrap" style="padding:4rem 1rem">
+      <h1>Connect with Cyber Experts</h1>
+      <p>Choose your industry and instantly see the right calendar for a VerSprite specialist. Futuristic look, frictionless booking.</p>
+      <a class="cta" href="#book" aria-label="Skip to booking form and calendar">Get Started</a>
+    </div>
+  </header>
+
+  <main class="wrap" id="book">
+    <section class="card">
+      <h2>Book Your Consultation</h2>
+      <label for="industry" class="visually-hidden">Industry</label>
+      <select id="industry" class="select" aria-label="Choose your industry">
+        <option value="">-- Choose Your Industry --</option>
+      </select>
+      <div id="calendly" class="panel" style="margin-top:1rem">
+        <p class="muted">Select your industry above to reveal the meeting calendar.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>© <span id="year"></span> VerSprite | Crafted for the neon web</div>
+    <div style="margin-top:.3rem"><a href="https://versprite.com" target="_blank" rel="noopener">Visit versprite.com</a></div>
+  </footer>
+
+  <script>
+    var industryToSalesperson = {
+      "Education": "Haylie Leitzsey",
+      "Energy & Utilities": "Haylie Leitzsey",
+      "Information Technology & Software": "Haylie Leitzsey",
+      "Insurance": "Haylie Leitzsey",
+      "Telecommunications": "Haylie Leitzsey",
+      "Construction": "Haylie Leitzsey",
+      "Food & Beverage": "Haylie Leitzsey",
+      "Hardware & Electronics": "Haylie Leitzsey",
+      "Marketing, Media & Entertainment": "Haylie Leitzsey",
+      "FinTech": "Sarah Kernan",
+      "Automotive": "Sarah Kernan",
+      "Consumer Goods (FMCG), Retail & eCommerce": "Sarah Kernan",
+      "Financial Services (Banking & Investment)": "Sarah Kernan",
+      "Government & Public Sector": "Sarah Kernan",
+      "Healthcare & Life Sciences": "Sarah Kernan",
+      "Hospitality & Travel": "Sarah Kernan",
+      "Legal Services": "Sarah Kernan",
+      "Manufacturing & Industrial": "Sarah Kernan",
+      "Non-Profit & NGOs": "Sarah Kernan",
+      "Professional Services (Consulting, Audit, Accounting, HR)": "Sarah Kernan",
+      "Real Estate": "Sarah Kernan",
+      "Transportation & Logistics": "Sarah Kernan"
+    };
+
+    var salespersonCalendly = {
+      "Haylie Leitzsey": "https://calendly.com/haylieleitzsey/versprite-chat",
+      "Sarah Kernan": "https://calendly.com/sarah-versprite/30min"
+    };
+
+    var industryCalendlyOverrides = {};
+
+    var sel = document.getElementById('industry');
+    Object.keys(industryToSalesperson).forEach(function(ind){
+      var opt = document.createElement('option');
+      opt.value = ind; opt.textContent = ind; sel.appendChild(opt);
+    });
+
+    var calWrap = document.getElementById('calendly');
+
+    function getCalendlyUrlForIndustry(industry){
+      if (!industry) return null;
+      if (industryCalendlyOverrides[industry]) return industryCalendlyOverrides[industry];
+      var sp = industryToSalesperson[industry];
+      return salespersonCalendly[sp] || null;
+    }
+
+    function renderCalendly(url){
+      calWrap.innerHTML = '';
+      if(!url){
+        calWrap.innerHTML = '<p class="muted">No link configured yet for this selection.</p>';
+        return;
+      }
+
+      // Enforce Calendly dark mode via URL params
+      try {
+        var u = new URL(url);
+        var p = u.searchParams;
+        if (!p.has('background_color')) p.set('background_color', '0b0c10'); // near-black
+        p.set('text_color', 'e5e7eb');   // light gray text
+        p.set('primary_color', 'ed1c24'); // VerSprite red accent
+        url = u.origin + u.pathname + '?' + p.toString();
+      } catch(e) {}
+
+      var div = document.createElement('div');
+      div.className = 'calendly-inline-widget';
+      div.setAttribute('data-url', url);
+      div.style.minWidth = '320px';
+      div.style.height = (window.innerHeight > 820 ? '720px' : '620px');
+      calWrap.appendChild(div);
+
+      if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
+        try { window.Calendly.initInlineWidget({ url: url, parentElement: div }); }catch(e){}
+      }
+    }
+
+    sel.addEventListener('change', function(e){
+      var chosen = e.target.value;
+      if (!industryToSalesperson.hasOwnProperty(chosen)) {
+        calWrap.innerHTML = '<p class="muted">Unknown industry selected.</p>';
+        return;
+      }
+      renderCalendly(getCalendlyUrlForIndustry(chosen));
+    });
+
+    var params = new URLSearchParams(location.search);
+    var preRaw = params.get('industry') || '';
+    var pre = preRaw.toLowerCase();
+    var keys = Object.keys(industryToSalesperson);
+    var match = null;
+    for (var i=0;i<keys.length;i++){
+      if (keys[i].toLowerCase() === pre){ match = keys[i]; break; }
+    }
+    if (match){ sel.value = match; renderCalendly(getCalendlyUrlForIndustry(match)); }
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    window.addEventListener('load', function(){
+      if (window.Calendly && document.querySelector('.calendly-inline-widget')) {
+        try { window.Calendly.initInlineWidgets && window.Calendly.initInlineWidgets(); } catch(e){}
+      }
+    });
+  </script>
+</body>
+</html>
