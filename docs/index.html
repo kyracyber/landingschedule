@@ -31,7 +31,12 @@
     .visually-hidden{position:absolute!important;clip:rect(1px,1px,1px,1px);padding:0;border:0;height:1px;width:1px;overflow:hidden}
 
     /* HERO */
-    .hero{position:relative;min-height:56vh;display:grid;place-items:center;text-align:center;overflow:hidden;background:radial-gradient(1200px 600px at 50% -10%,rgba(0,255,255,.15),transparent),linear-gradient(180deg,rgba(0,0,0,.3),rgba(0,0,0,.9))}
+    .hero{position:relative;min-height:56vh;display:grid;place-items:center;text-align:center;overflow:hidden;transition:min-height .4s ease, padding .4s ease, filter .3s ease;background:radial-gradient(1200px 600px at 50% -10%,rgba(0,255,255,.15),transparent),linear-gradient(180deg,rgba(0,0,0,.3),rgba(0,0,0,.9))}
+    .hero.collapsed{min-height:12vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+    .hero.collapsed h1{font-size:1.25rem;letter-spacing:0;text-shadow:none;margin:0}
+    .hero.collapsed p,.hero.collapsed .cta{display:none}
+    .hero-toggle{position:absolute;top:.75rem;right:.75rem;background:rgba(0,0,0,.6);color:var(--vs-cyan);border:1px solid rgba(0,255,255,.4);font-size:.75rem;padding:.4rem .6rem;border-radius:6px;cursor:pointer}
+    .hero-toggle:hover{background:rgba(0,0,0,.85);color:#fff}
     .hero::before{content:"";position:absolute;inset:0;background:url('./Lucid_Origin_a_futuristic_cyberpunk_cityscape_at_night_with_vi_0.jpg') center/cover no-repeat;opacity:.35;filter:saturate(120%) contrast(110%)}
     .hero h1{position:relative;font-weight:800;font-size:clamp(2rem,5vw,4rem);letter-spacing:-.02em;text-shadow:0 0 14px rgba(0,255,255,.7)}
     .hero p{position:relative;max-width:780px;margin:1rem auto 2rem;color:var(--m)}
@@ -51,8 +56,8 @@
     footer a:hover{color:var(--vs-red)}
     /* Make Calendly smaller and centered */
     #calendly{padding:0}
-  /* Reduced ~20% width & height */
-  #calendly .calendly-inline-widget{width:100%;max-width:656px;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:inset 0 0 24px rgba(0,0,0,.8);background:#0b0c10;height:clamp(384px,54vh,448px)}
+  /* Reduced ~20% width & height (JS may override height to fit viewport) */
+  #calendly .calendly-inline-widget{width:100%;max-width:656px;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:inset 0 0 24px rgba(0,0,0,.8);background:#0b0c10;height:clamp(384px,54vh,448px);transition:height .3s ease}
   @media (min-width:1280px){#calendly .calendly-inline-widget{max-width:608px}}
   @media (min-width:1600px){#calendly .calendly-inline-widget{max-width:576px}}
   body{min-height:100dvh}
@@ -73,6 +78,7 @@
 </head>
 <body>
   <header class="hero" id="top">
+    <button class="hero-toggle" id="heroToggle" type="button" aria-pressed="false" aria-label="Toggle intro section">Collapse</button>
     <div class="wrap" style="padding:4rem 1rem">
       <h1>Contact Us</h1>
       <p>Choose your industry and instantly connect with the right VerSprite sales specialist calendar</p>
@@ -138,6 +144,33 @@
     });
 
     var calWrap = document.getElementById('calendly');
+    var headerEl = document.querySelector('.hero');
+    var heroToggleBtn = document.getElementById('heroToggle');
+
+    function collapseHero(shouldCollapse){
+      if(!headerEl) return;
+      var isCollapsed = headerEl.classList.contains('collapsed');
+      if(shouldCollapse && !isCollapsed){ headerEl.classList.add('collapsed'); heroToggleBtn && (heroToggleBtn.textContent = 'Expand'); heroToggleBtn && heroToggleBtn.setAttribute('aria-pressed','true'); }
+      if(!shouldCollapse && isCollapsed){ headerEl.classList.remove('collapsed'); heroToggleBtn && (heroToggleBtn.textContent = 'Collapse'); heroToggleBtn && heroToggleBtn.setAttribute('aria-pressed','false'); }
+    }
+
+    heroToggleBtn && heroToggleBtn.addEventListener('click', function(){
+      var wantCollapse = !headerEl.classList.contains('collapsed');
+      collapseHero(wantCollapse);
+      // After toggling, refit the calendar height if present
+      requestAnimationFrame(fitCalendlyHeight);
+    });
+
+    function fitCalendlyHeight(){
+      var widget = document.querySelector('#calendly .calendly-inline-widget');
+      if(!widget) return;
+      var headerH = headerEl ? headerEl.getBoundingClientRect().height : 0;
+      var buffer = 24; // breathing room
+      var available = Math.max(360, window.innerHeight - headerH - buffer);
+      // Cap to avoid excessive height on very tall screens
+      var target = Math.min(720, available);
+      widget.style.height = target + 'px';
+    }
 
     function getCalendlyUrlForIndustry(industry){
       if (!industry) return null;
@@ -166,9 +199,18 @@
       var div = document.createElement('div');
       div.className = 'calendly-inline-widget';
       div.setAttribute('data-url', url);
-    div.style.minWidth = '320px';
-    // Height now controlled via CSS clamp; JS height assignment removed.
+      div.style.minWidth = '320px';
       calWrap.appendChild(div);
+
+      // Collapse hero, scroll into view, and fit height to the viewport
+      collapseHero(true);
+      document.getElementById('book').scrollIntoView({behavior:'smooth', block:'start'});
+      // Fit after layout settles
+      requestAnimationFrame(function(){
+        fitCalendlyHeight();
+        // Fit again after Calendly initializes (iframe insertion may change flow)
+        setTimeout(fitCalendlyHeight, 300);
+      });
 
       if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
         try { window.Calendly.initInlineWidget({ url: url, parentElement: div }); }catch(e){}
@@ -192,7 +234,10 @@
     for (var i=0;i<keys.length;i++){
       if (keys[i].toLowerCase() === pre){ match = keys[i]; break; }
     }
-    if (match){ sel.value = match; renderCalendly(getCalendlyUrlForIndustry(match)); }
+    if (match){
+      sel.value = match;
+      renderCalendly(getCalendlyUrlForIndustry(match));
+    }
 
     document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -200,6 +245,11 @@
       if (window.Calendly && document.querySelector('.calendly-inline-widget')) {
         try { window.Calendly.initInlineWidgets && window.Calendly.initInlineWidgets(); } catch(e){}
       }
+    });
+
+    // Keep the calendar fitting to viewport on resize
+    window.addEventListener('resize', function(){
+      fitCalendlyHeight();
     });
   </script>
 </body>
