@@ -84,10 +84,12 @@
     .loading{animation:pulse 1.2s infinite;color:var(--m);text-align:center;padding:1.25rem;font-size:.95rem}
     @keyframes pulse{0%{opacity:.45}50%{opacity:1}100%{opacity:.45}}
     /* Calendly hardening: force dark backgrounds and smooth reveal */
-    .calendly-inline-widget{background:#0b0c10!important;position:relative}
-    .calendly-inline-widget iframe{background:#0b0c10!important;opacity:0;transition:opacity .25s ease}
+  .calendly-inline-widget{background:#0b0c10!important;position:relative;overflow:hidden;border-radius:12px}
+  .calendly-inline-widget iframe{display:block;background:#0b0c10!important;opacity:0;transition:opacity .25s ease;border:0}
   .widget-overlay{position:absolute;inset:0;background:#0b0c10;display:grid;place-items:center;z-index:999;opacity:1;transition:opacity .3s ease}
   .widget-overlay .msg{color:#9CA3AF;animation:pulse 1.2s infinite}
+  /* Permanent edge mask to hide any inner white gutters from iframe default margins */
+  .edge-mask{position:absolute;inset:0;pointer-events:none;border:14px solid #0b0c10;border-radius:12px;box-sizing:border-box;z-index:6}
   </style>
 </head>
 <body>
@@ -246,14 +248,19 @@
       div.style.minWidth = '320px';
       div.style.height = (window.innerHeight > 820 ? '720px' : '620px');
       div.style.background = '#0b0c10';
-      // Overlay to mask any white flash until iframe paints
+  // Permanent edge mask to hide any inner white gutters
+  const edgeMask = document.createElement('div');
+  edgeMask.className = 'edge-mask';
+
+  // Overlay to mask any white flash until iframe paints
       const overlay = document.createElement('div');
       overlay.className = 'widget-overlay';
       const overlayMsg = document.createElement('div');
       overlayMsg.className = 'msg';
       overlayMsg.textContent = 'Preparing calendar…';
       overlay.appendChild(overlayMsg);
-  // Prepare widget with overlay BEFORE inserting into DOM to avoid any gap
+  // Prepare widget with mask and overlay BEFORE inserting into DOM to avoid any gap
+  div.appendChild(edgeMask);
   div.appendChild(overlay);
   // Replace loading with widget (overlay is already inside)
   calWrap.replaceChild(div, loading);
