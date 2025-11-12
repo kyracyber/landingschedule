@@ -24,10 +24,11 @@
       --panel-2:#0F172A;
       --text:#E5E7EB;
       --m:#9CA3AF;
+      --header-h:56vh; /* fallback before JS calculates exact pixel height */
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans";color:var(--text);background:#000;overflow-x:hidden}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans";color:var(--text);background:#000;overflow-x:hidden;padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
     .visually-hidden{position:absolute!important;clip:rect(1px,1px,1px,1px);padding:0;border:0;height:1px;width:1px;overflow:hidden}
 
     /* HERO */
@@ -57,7 +58,11 @@
     /* Make Calendly smaller and centered */
     #calendly{padding:0}
   /* Reduced ~20% width & height (JS may override height to fit viewport) */
-  #calendly .calendly-inline-widget{width:100%;max-width:656px;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:inset 0 0 24px rgba(0,0,0,.8);background:#0b0c10;height:clamp(384px,54vh,448px);transition:height .3s ease}
+  #calendly .calendly-inline-widget{width:100%;max-width:656px;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:inset 0 0 24px rgba(0,0,0,.8);background:#0b0c10;height:clamp(420px,calc(100dvh - var(--header-h) - 32px),720px);transition:height .3s ease}
+      /* Reduced motion preferences */
+      @media (prefers-reduced-motion: reduce){
+        .hero,.calendly-inline-widget{transition:none !important}
+      }
   @media (min-width:1280px){#calendly .calendly-inline-widget{max-width:608px}}
   @media (min-width:1600px){#calendly .calendly-inline-widget{max-width:576px}}
   body{min-height:100dvh}
@@ -161,15 +166,10 @@
       requestAnimationFrame(fitCalendlyHeight);
     });
 
-    function fitCalendlyHeight(){
-      var widget = document.querySelector('#calendly .calendly-inline-widget');
-      if(!widget) return;
-      var headerH = headerEl ? headerEl.getBoundingClientRect().height : 0;
-      var buffer = 24; // breathing room
-      var available = Math.max(360, window.innerHeight - headerH - buffer);
-      // Cap to avoid excessive height on very tall screens
-      var target = Math.min(720, available);
-      widget.style.height = target + 'px';
+    function updateHeaderHeightVar(){
+      if(!headerEl) return;
+      var h = headerEl.getBoundingClientRect().height;
+      document.documentElement.style.setProperty('--header-h', h + 'px');
     }
 
     function getCalendlyUrlForIndustry(industry){
@@ -207,9 +207,8 @@
       document.getElementById('book').scrollIntoView({behavior:'smooth', block:'start'});
       // Fit after layout settles
       requestAnimationFrame(function(){
-        fitCalendlyHeight();
-        // Fit again after Calendly initializes (iframe insertion may change flow)
-        setTimeout(fitCalendlyHeight, 300);
+        updateHeaderHeightVar();
+        setTimeout(updateHeaderHeightVar, 300); // after Calendly injects iframe
       });
 
       if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
@@ -249,8 +248,17 @@
 
     // Keep the calendar fitting to viewport on resize
     window.addEventListener('resize', function(){
-      fitCalendlyHeight();
+      updateHeaderHeightVar();
     });
+
+    // Initial header height variable set
+    window.addEventListener('load', updateHeaderHeightVar);
+
+    // Override smooth scroll if user prefers reduced motion
+    function smoothScroll(el){
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      el.scrollIntoView({behavior: prefersReduced ? 'auto' : 'smooth', block:'start'});
+    }
   </script>
 </body>
 </html>
