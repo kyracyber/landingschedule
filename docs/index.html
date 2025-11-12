@@ -157,13 +157,25 @@
         return;
       }
 
-      // Enforce Calendly dark mode via URL params
+      // Enforce Calendly dark mode via URL params to match site background
       try {
         var u = new URL(url);
         var p = u.searchParams;
-        if (!p.has('background_color')) p.set('background_color', '0b0c10'); // near-black
-        p.set('text_color', 'e5e7eb');   // light gray text
-        p.set('primary_color', 'ed1c24'); // VerSprite red accent
+        // Derive page background color; fallback to pure black
+        var siteBg = getComputedStyle(document.body).backgroundColor || '#000000';
+        // Convert rgb(...) to hex if needed
+        function rgbToHex(rgb){
+          var m = rgb.match(/\d+/g);
+          if (!m || m.length < 3) return '000000';
+          return [m[0],m[1],m[2]].map(function(v){
+            var h = parseInt(v,10).toString(16); return h.length===1?'0'+h:h;
+          }).join('');
+        }
+        var hex = siteBg.startsWith('#') ? siteBg.replace('#','') : rgbToHex(siteBg);
+        // Apply only if not provided
+        if (!p.has('background_color')) p.set('background_color', hex);
+        if (!p.has('text_color')) p.set('text_color', 'e5e7eb');   // light gray text
+        if (!p.has('primary_color')) p.set('primary_color', 'ed1c24'); // VerSprite red accent
         url = u.origin + u.pathname + '?' + p.toString();
       } catch(e) {}
       const loading = document.createElement('div');
@@ -171,11 +183,13 @@
       loading.textContent = 'Loading calendar…';
       calWrap.appendChild(loading);
       statusRegion.textContent = 'Loading calendar.';
-      const div = document.createElement('div');
+  const div = document.createElement('div');
       div.className = 'calendly-inline-widget';
       div.setAttribute('data-url', url);
       div.style.minWidth = '320px';
       div.style.height = (window.innerHeight > 820 ? '720px' : '620px');
+  // Ensure container behind iframe matches page bg while loading/if params fail
+  div.style.backgroundColor = getComputedStyle(document.body).backgroundColor || '#000';
       // Replace loading with widget
       calWrap.replaceChild(div, loading);
       if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
