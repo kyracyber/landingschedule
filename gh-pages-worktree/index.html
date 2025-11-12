@@ -148,6 +148,25 @@
       return salespersonCalendly[sp] || null;
     }
 
+    function computeCalendlyHeight() {
+      // Compute a responsive height for the Calendly widget:
+      // - Use ~72% of viewport height on small screens
+      // - Use a sensible min/max for medium/large screens
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      var h = Math.round(vh * 0.72);
+      if (vh >= 900) h = 720; // desktop cap
+      if (h < 520) h = 520; // floor for very small devices
+      return h + 'px';
+    }
+
+    function adjustCalendlyHeight() {
+      var widgets = document.querySelectorAll('.calendly-inline-widget');
+      var h = computeCalendlyHeight();
+      widgets.forEach(function(w){
+        w.style.height = h;
+      });
+    }
+
     function renderCalendly(url){
       calWrap.innerHTML = '';
       if(!url){
@@ -169,12 +188,24 @@
       div.className = 'calendly-inline-widget';
       div.setAttribute('data-url', url);
       div.style.minWidth = '320px';
-      div.style.height = (window.innerHeight > 820 ? '720px' : '620px');
+      div.style.width = '100%';
+      div.style.height = computeCalendlyHeight();
       calWrap.appendChild(div);
 
+      // Initialize inline widget if Calendly script is loaded
       if(window.Calendly && typeof window.Calendly.initInlineWidget === 'function'){
         try { window.Calendly.initInlineWidget({ url: url, parentElement: div }); }catch(e){}
       }
+
+      // Ensure height adjusts on resize/orientation change
+      // debounce for performance
+      if (window.__calendlyResizeHandler) window.removeEventListener('resize', window.__calendlyResizeHandler);
+      window.__calendlyResizeHandler = function(){
+        clearTimeout(window.__calendlyResizeTimer);
+        window.__calendlyResizeTimer = setTimeout(adjustCalendlyHeight, 120);
+      };
+      window.addEventListener('resize', window.__calendlyResizeHandler);
+      window.addEventListener('orientationchange', window.__calendlyResizeHandler);
     }
 
     sel.addEventListener('change', function(e){
